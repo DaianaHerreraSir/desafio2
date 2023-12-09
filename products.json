@@ -1,0 +1,20 @@
+[
+  {
+    "title": "pantalon",
+    "description": "pantalon negro con brillos",
+    "price": 15000,
+    "thumbnail": "pantalonfoto",
+    "stock": 40,
+    "code": "d343",
+    "id": 2
+  },
+  {
+    "title": "camisa",
+    "description": "camisa a cuadros",
+    "price": 5000,
+    "thumbnail": "camisafoto",
+    "stock": 60,
+    "code": "f347",
+    "id": 3
+  }
+]
