@@ -1,30 +1,31 @@
-const fs = require('fs');
+const fs = require('fs').promises;
 
 class ProductManager {
   constructor(filePath) {
     this.path = filePath;
-    this.products = this.readProductsFromFile();
+    this.products=[];
+    this.readProductsFromFile();
   }
 
-  readProductsFromFile() {
+  async readProductsFromFile() {
     try {
-      const data = fs.readFileSync(this.path, 'utf-8');
-      return JSON.parse(data);
+      const data = await fs.readFileSync(this.path, 'utf-8');
+      this.products = JSON.parse(data);
     } catch (error) {
       
-      return [];
+      this.products= [];
     }
   }
 
-  saveProductsToFile() {
-    fs.writeFileSync(this.path, JSON.stringify(this.products, null, 2), 'utf-8');
+  async saveProductsToFile() {
+    await fs.writeFile(this.path, JSON.stringify(this.products, null, 2), 'utf-8');
   }
 
   getProducts() {
     return this.products;
   }
 
-  addProduct(product) {
+  async addProduct(product) {
     if (!product.title || !product.description || !product.price || !product.thumbnail || !product.code || !product.stock) {
       return "Todos los campos son obligatorios.";
     }
@@ -43,7 +44,7 @@ class ProductManager {
       this.products.push(product);
     }
 
-    this.saveProductsToFile();
+  await this.saveProductsToFile();
     return "Producto agregado";
   }
 
@@ -52,24 +53,24 @@ class ProductManager {
     return searchProduct ? searchProduct : "Producto no encontrado";
   }
 
-  updateProduct(id, updatedProduct) {
+ async updateProduct(id, updatedProduct) {
     const index = this.products.findIndex(prod => prod.id === id);
 
     if (index !== -1) {
       this.products[index] = { ...this.products[index], ...updatedProduct };
-      this.saveProductsToFile();
+      await this.saveProductsToFile();
       return "Producto actualizado";
     }
 
     return "Producto no encontrado";
   }
 
-  deleteProduct(id) {
+async deleteProduct(id) {
     const index = this.products.findIndex(prod => prod.id === id);
 
     if (index !== -1) {
       this.products.splice(index, 1);
-      this.saveProductsToFile();
+    await this.saveProductsToFile();
       return "Producto eliminado";
     }
 
@@ -79,18 +80,20 @@ class ProductManager {
 
 const productManager = new ProductManager('products.json');
 
-
-console.log(productManager.addProduct({ title: "remera", description: "remera con estampa blanca", price: 4000, thumbnail: "remerafoto", stock: 30, code: "d345" }));
-console.log(productManager.addProduct({ title: "pantalon", description: "pantalon negro con brillos", price: 12000, thumbnail: "pantalonfoto", stock: 40, code: "d343" }));
-console.log(productManager.addProduct({ title: "camisa", description: "camisa a cuadros", price: 5000, thumbnail: "camisafoto", stock: 60, code: "f347" }));
+(async()=>{
+  console.log( await productManager.addProduct({ title: "remera", description: "remera con estampa blanca", price: 4000, thumbnail: "remerafoto", stock: 30, code: "d345" }));
+console.log(await productManager.addProduct({ title: "pantalon", description: "pantalon negro con brillos", price: 12000, thumbnail: "pantalonfoto", stock: 40, code: "d343" }));
+console.log(await productManager.addProduct({ title: "camisa", description: "camisa a cuadros", price: 5000, thumbnail: "camisafoto", stock: 60, code: "f347" }));
 
 console.log(productManager.getProductById(2));
 console.log(productManager.getProducts());
 
-console.log(productManager.updateProduct(2, { price: 15000 }));
+console.log(await productManager.updateProduct(2, { price: 15000 }));
 console.log(productManager.getProducts());
 
-console.log(productManager.deleteProduct(1));
-console.log(productManager.getProducts());
+console.log(await productManager.deleteProduct(1));
+console.log(productManager.getProducts())
+})()
+;
 
   
